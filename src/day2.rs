@@ -1,6 +1,6 @@
 use aoc_runner_derive::aoc;
 
-fn play(input: &str) -> (u32 ,u32) {
+fn play(input: &str) -> (u32, u32) {
     match input {
         "A X" => (4, 4),
         "A Y" => (1, 8),
@@ -17,13 +17,10 @@ fn play(input: &str) -> (u32 ,u32) {
 
 #[aoc(day2, part1)]
 pub fn part1(input: &str) -> u32 {
-    input
-        .lines()
-        .map(|line| play(line).1)
-        .sum()
+    input.lines().map(|line| play(line).1).sum()
 }
 
-fn play2(input: &str) -> (u32 ,u32) {
+fn play2(input: &str) -> (u32, u32) {
     match input {
         "A X" => (7, 3),
         "A Y" => (4, 4),
@@ -40,8 +37,5 @@ fn play2(input: &str) -> (u32 ,u32) {
 
 #[aoc(day2, part2)]
 pub fn part2(input: &str) -> u32 {
-    input
-        .lines()
-        .map(|line| play2(line).1)
-        .sum()
+    input.lines().map(|line| play2(line).1).sum()
 }
