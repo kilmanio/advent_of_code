@@ -55,7 +55,10 @@ fn str_to_number(input: &str) -> usize {
 }
 
 fn foobar(input: &str, pat: &str, first: &mut NumPos, last: &mut NumPos) {
-    let tmp: Vec<isize> = input.match_indices(pat).map(|(pos, _)| isize::try_from(pos).unwrap_or(0)).collect();
+    let tmp: Vec<isize> = input
+        .match_indices(pat)
+        .map(|(pos, _)| isize::try_from(pos).unwrap_or(0))
+        .collect();
     if let Some(pos) = tmp.first() {
         if pos < &first.pos {
             first.pos = *pos;
