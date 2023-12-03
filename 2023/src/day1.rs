@@ -1,4 +1,5 @@
 use aoc_runner_derive::aoc;
+use rayon::prelude::*;
 
 fn do_line(input: &str) -> u32 {
     let mut i = input
@@ -26,7 +27,7 @@ const PATTERNS: [&str; 18] = [
 
 struct NumPos {
     pub num: usize,
-    pub pos: usize,
+    pub pos: isize,
 }
 
 fn str_to_number(input: &str) -> usize {
@@ -54,7 +55,7 @@ fn str_to_number(input: &str) -> usize {
 }
 
 fn foobar(input: &str, pat: &str, first: &mut NumPos, last: &mut NumPos) {
-    let tmp: Vec<usize> = input.match_indices(pat).map(|(pos, _)| pos).collect();
+    let tmp: Vec<isize> = input.match_indices(pat).map(|(pos, _)| isize::try_from(pos).unwrap_or(0)).collect();
     if let Some(pos) = tmp.first() {
         if pos < &first.pos {
             first.pos = *pos;
@@ -72,9 +73,12 @@ fn foobar(input: &str, pat: &str, first: &mut NumPos, last: &mut NumPos) {
 fn do_line2(input: &str) -> usize {
     let mut first = NumPos {
         num: 0,
-        pos: usize::MAX,
+        pos: isize::MAX,
     };
-    let mut last = NumPos { num: 0, pos: 0 };
+    let mut last = NumPos {
+        num: 0,
+        pos: isize::MIN,
+    };
 
     for pattern in PATTERNS {
         foobar(input, pattern, &mut first, &mut last);
@@ -85,5 +89,5 @@ fn do_line2(input: &str) -> usize {
 
 #[aoc(day1, part2)]
 pub fn part2(input: &str) -> usize {
-    input.split('\n').map(do_line2).sum()
+    input.par_split('\n').map(do_line2).sum()
 }
