@@ -19,9 +19,13 @@ impl Game {
     fn is_valid(&self) -> bool {
         self.red <= 12 && self.green <= 13 && self.blue <= 14
     }
+
+    fn calc_power(&self) -> usize {
+        self.red * self.green * self.blue
+    }
 }
 
-fn to_game(input: &str) -> Game {
+fn to_game_max(input: &str) -> Game {
     let mut game = Game::new();
     let rounds = input.split(": ").nth(1).unwrap().split("; ");
     for round in rounds {
@@ -51,9 +55,18 @@ fn to_game(input: &str) -> Game {
 pub fn part1(input: &str) -> usize {
     input
         .split('\n')
-        .map(to_game)
+        .map(to_game_max)
         .enumerate()
         .filter(|(_, game)| game.is_valid())
         .map(|(id, _)| id + 1)
+        .sum()
+}
+
+#[aoc(day2, part2)]
+pub fn part2(input: &str) -> usize {
+    input
+        .split('\n')
+        .map(to_game_max)
+        .map(|g| g.calc_power())
         .sum()
 }
