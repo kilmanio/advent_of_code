@@ -1,56 +1,40 @@
 use aoc_runner_derive::aoc;
 use std::cmp::Ordering;
 
-#[derive(Eq, PartialEq, Debug)]
-enum Direction {
-    Unsafe,
-    Up,
-    Down,
-}
-
-fn check_direction(lhs: &u32, rhs: &u32) -> Direction {
-    let diff = lhs.abs_diff(*rhs);
-    if diff > 3 {
-        return Direction::Unsafe;
-    }
-
-    match lhs.cmp(rhs) {
-        Ordering::Less => Direction::Up,
-        Ordering::Equal => Direction::Unsafe,
-        Ordering::Greater => Direction::Down,
-    }
-}
-
 fn check_record(v: &[u32]) -> bool {
     let mut it = v.iter();
     let mut lhs = it.next().unwrap();
-    let mut direction: Option<Direction> = None;
+    let mut ordering = Ordering::Equal;
 
     for rhs in it {
-        let this_direction = check_direction(lhs, rhs);
-        if let Some(ref dir) = direction {
-            if this_direction != *dir {
-                return false;
-            }
+        let this_ordering = lhs.cmp(rhs);
+        if (this_ordering as i8).abs_diff(ordering as i8) > 1 {
+            return false;
         }
 
-        direction = Some(this_direction);
+        ordering = this_ordering;
+        let diff = lhs.abs_diff(*rhs);
+        if diff < 1 || diff > 3 {
+            return false;
+        }
+
         lhs = rhs;
     }
 
-    direction != Some(Direction::Unsafe)
+    true
 }
 
 fn generate_variations(sl: &[u32]) -> Vec<Vec<u32>> {
     let mut ret = Vec::new();
     let v = sl.to_vec();
-    ret.push(v.clone());
 
     for i in 0..v.len() {
         let mut vc = v.clone();
         vc.remove(i);
         ret.push(vc);
     }
+
+    ret.push(v);
 
     ret
 }
