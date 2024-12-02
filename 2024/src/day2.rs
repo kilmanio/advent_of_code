@@ -1,7 +1,7 @@
 use aoc_runner_derive::aoc;
 use std::cmp::Ordering;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 enum Direction {
     Unsafe,
     Up,
@@ -15,9 +15,9 @@ fn check_direction(lhs: &u32, rhs: &u32) -> Direction {
     }
 
     match lhs.cmp(rhs) {
-        Ordering::Less => Direction::Down,
+        Ordering::Less => Direction::Up,
         Ordering::Equal => Direction::Unsafe,
-        Ordering::Greater => Direction::Up,
+        Ordering::Greater => Direction::Down,
     }
 }
 
@@ -28,8 +28,8 @@ fn check_record(v: &[u32]) -> bool {
 
     for rhs in it {
         let this_direction = check_direction(lhs, rhs);
-        if let Some(dir) = direction {
-            if this_direction != dir {
+        if let Some(ref dir) = direction {
+            if this_direction != *dir {
                 return false;
             }
         }
@@ -38,7 +38,34 @@ fn check_record(v: &[u32]) -> bool {
         lhs = rhs;
     }
 
-    true
+    direction != Some(Direction::Unsafe)
+}
+
+fn generate_variations(sl: &[u32]) -> Vec<Vec<u32>> {
+    let mut ret = Vec::new();
+    let v = sl.to_vec();
+    ret.push(v.clone());
+
+    for i in 0..v.len() {
+        let mut vc = v.clone();
+        vc.remove(i);
+        ret.push(vc);
+    }
+
+    ret
+}
+
+fn check_record_extra_life(v: &[u32]) -> bool {
+    let variations = generate_variations(v);
+    let mut result = false;
+
+    for var in variations {
+        if check_record(&var) {
+            result = true;
+        }
+    }
+
+    result
 }
 
 #[aoc(day2, part1)]
@@ -51,5 +78,18 @@ pub fn part1(input: &str) -> u32 {
                 .collect::<Vec<u32>>()
         })
         .filter(|v| check_record(v))
+        .count() as u32
+}
+
+#[aoc(day2, part2)]
+pub fn part2(input: &str) -> u32 {
+    input
+        .split('\n')
+        .map(|s| {
+            s.split(' ')
+                .map(|s2| s2.parse::<u32>().unwrap())
+                .collect::<Vec<u32>>()
+        })
+        .filter(|v| check_record_extra_life(v))
         .count() as u32
 }
