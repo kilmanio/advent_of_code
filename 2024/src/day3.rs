@@ -18,7 +18,7 @@ pub fn part1(input: &str) -> u32 {
 
 #[aoc(day3, part2)]
 pub fn part2(input: &str) -> u32 {
-    let re = Regex::new(r"don't\(\).*?do\(\)").unwrap();
+    let re = Regex::new(r"don't\(\)(.|\n)*?do\(\)").unwrap();
     let input = re.replace_all(input, "");
     let input = input.split("don't()").next().unwrap();
 
