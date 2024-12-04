@@ -14,7 +14,7 @@ fn check_record(v: &[u32]) -> bool {
 
         ordering = this_ordering;
         let diff = lhs.abs_diff(*rhs);
-        if diff < 1 || diff > 3 {
+        if !(1..=3).contains(&diff) {
             return false;
         }
 

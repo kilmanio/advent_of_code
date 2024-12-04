@@ -22,7 +22,7 @@ pub fn part2(input: &str) -> u32 {
     let input = re.replace_all(input, "");
     let input = input.split("don't()").next().unwrap();
 
-    calculate(&input)
+    calculate(input)
 }
 
 #[cfg(test)]
