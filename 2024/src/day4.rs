@@ -1,10 +1,10 @@
 use aoc_runner_derive::aoc;
 
-fn find_c(v: &Vec<Vec<char>>, coord: (usize, usize)) -> Option<&char> {
+fn find_c(v: &[Vec<char>], coord: (usize, usize)) -> Option<&char> {
     v.get(coord.0)?.get(coord.1)
 }
 
-fn find_cross(v: &Vec<Vec<char>>, x: usize, y: usize) -> Option<()> {
+fn find_cross(v: &[Vec<char>], x: usize, y: usize) -> Option<()> {
     let t_l = (x.checked_sub(1)?, y.checked_sub(1)?);
     let t_r = (x + 1, y.checked_sub(1)?);
     let b_l = (x.checked_sub(1)?, y + 1);
@@ -16,14 +16,15 @@ fn find_cross(v: &Vec<Vec<char>>, x: usize, y: usize) -> Option<()> {
     let b_r_c = find_c(v, b_r)?;
 
     if (*t_l_c == 'M' && *b_r_c == 'S' || *t_l_c == 'S' && *b_r_c == 'M')
-    && (*t_r_c == 'M' && *b_l_c == 'S' || *t_r_c == 'S' && *b_l_c == 'M') {
+        && (*t_r_c == 'M' && *b_l_c == 'S' || *t_r_c == 'S' && *b_l_c == 'M')
+    {
         return Some(());
     }
 
     None
 }
 
-fn find_xmas(v: &Vec<Vec<char>>, x: usize, x_dir: isize, y: usize, y_dir: isize) -> u32 {
+fn find_xmas(v: &[Vec<char>], x: usize, x_dir: isize, y: usize, y_dir: isize) -> Option<()> {
     let x1 = (x as isize + x_dir) as usize;
     let x2 = (x as isize + 2 * x_dir) as usize;
     let x3 = (x as isize + 3 * x_dir) as usize;
@@ -31,44 +32,26 @@ fn find_xmas(v: &Vec<Vec<char>>, x: usize, x_dir: isize, y: usize, y_dir: isize)
     let y2 = (y as isize + 2 * y_dir) as usize;
     let y3 = (y as isize + 3 * y_dir) as usize;
 
-    let mut m = false;
-    let mut a = false;
-    let mut s = false;
+    let c1 = find_c(v, (x1, y1))?;
+    let c2 = find_c(v, (x2, y2))?;
+    let c3 = find_c(v, (x3, y3))?;
 
-    if let Some(line) = v.get(x1) {
-        if let Some(c) = line.get(y1) {
-            if *c == 'M' {
-                m = true;
-            }
-        }
-    }
-    if let Some(line) = v.get(x2) {
-        if let Some(c) = line.get(y2) {
-            if *c == 'A' {
-                a = true;
-            }
-        }
-    }
-    if let Some(line) = v.get(x3) {
-        if let Some(c) = line.get(y3) {
-            if *c == 'S' {
-                s = true;
-            }
-        }
+    if *c1 == 'M' && *c2 == 'A' && *c3 == 'S' {
+        return Some(());
     }
 
-    (m & a & s) as u32
+    None
 }
 
-fn find_xmas_count(v: &Vec<Vec<char>>, x: usize, y: usize) -> u32 {
-    find_xmas(v, x, 1, y, 0)
-        + find_xmas(v, x, 1, y, 1)
-        + find_xmas(v, x, 0, y, 1)
-        + find_xmas(v, x, -1, y, 1)
-        + find_xmas(v, x, -1, y, 0)
-        + find_xmas(v, x, -1, y, -1)
-        + find_xmas(v, x, 0, y, -1)
-        + find_xmas(v, x, 1, y, -1)
+fn find_xmas_count(v: &[Vec<char>], x: usize, y: usize) -> u32 {
+    find_xmas(v, x, 1, y, 0).is_some() as u32
+        + find_xmas(v, x, 1, y, 1).is_some() as u32
+        + find_xmas(v, x, 0, y, 1).is_some() as u32
+        + find_xmas(v, x, -1, y, 1).is_some() as u32
+        + find_xmas(v, x, -1, y, 0).is_some() as u32
+        + find_xmas(v, x, -1, y, -1).is_some() as u32
+        + find_xmas(v, x, 0, y, -1).is_some() as u32
+        + find_xmas(v, x, 1, y, -1).is_some() as u32
 }
 
 #[aoc(day4, part1)]
@@ -102,10 +85,8 @@ pub fn part2(input: &str) -> u32 {
 
     for (x, line) in v.iter().enumerate() {
         for (y, c) in line.iter().enumerate() {
-            if *c == 'A' {
-                if find_cross(&v, x, y) == Some(()) {
+            if *c == 'A' && find_cross(&v, x, y) == Some(()) {
                     xmas_count += 1;
-                };
             }
         }
     }
