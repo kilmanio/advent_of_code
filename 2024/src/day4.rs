@@ -1,5 +1,28 @@
 use aoc_runner_derive::aoc;
 
+fn find_c(v: &Vec<Vec<char>>, coord: (usize, usize)) -> Option<&char> {
+    v.get(coord.0)?.get(coord.1)
+}
+
+fn find_cross(v: &Vec<Vec<char>>, x: usize, y: usize) -> Option<()> {
+    let t_l = (x.checked_sub(1)?, y.checked_sub(1)?);
+    let t_r = (x + 1, y.checked_sub(1)?);
+    let b_l = (x.checked_sub(1)?, y + 1);
+    let b_r = (x + 1, y + 1);
+
+    let t_l_c = find_c(v, t_l)?;
+    let t_r_c = find_c(v, t_r)?;
+    let b_l_c = find_c(v, b_l)?;
+    let b_r_c = find_c(v, b_r)?;
+
+    if (*t_l_c == 'M' && *b_r_c == 'S' || *t_l_c == 'S' && *b_r_c == 'M')
+    && (*t_r_c == 'M' && *b_l_c == 'S' || *t_r_c == 'S' && *b_l_c == 'M') {
+        return Some(());
+    }
+
+    None
+}
+
 fn find_xmas(v: &Vec<Vec<char>>, x: usize, x_dir: isize, y: usize, y_dir: isize) -> u32 {
     let x1 = (x as isize + x_dir) as usize;
     let x2 = (x as isize + 2 * x_dir) as usize;
@@ -35,7 +58,7 @@ fn find_xmas(v: &Vec<Vec<char>>, x: usize, x_dir: isize, y: usize, y_dir: isize)
     }
 
     (m & a & s) as u32
-} 
+}
 
 fn find_xmas_count(v: &Vec<Vec<char>>, x: usize, y: usize) -> u32 {
     find_xmas(v, x, 1, y, 0)
@@ -61,6 +84,28 @@ pub fn part1(input: &str) -> u32 {
         for (y, c) in line.iter().enumerate() {
             if *c == 'X' {
                 xmas_count += find_xmas_count(&v, x, y);
+            }
+        }
+    }
+
+    xmas_count
+}
+
+#[aoc(day4, part2)]
+pub fn part2(input: &str) -> u32 {
+    let mut xmas_count = 0;
+
+    let v: Vec<Vec<char>> = input
+        .split('\n')
+        .map(|line| line.chars().collect())
+        .collect();
+
+    for (x, line) in v.iter().enumerate() {
+        for (y, c) in line.iter().enumerate() {
+            if *c == 'A' {
+                if find_cross(&v, x, y) == Some(()) {
+                    xmas_count += 1;
+                };
             }
         }
     }
