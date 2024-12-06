@@ -86,7 +86,7 @@ pub fn part2(input: &str) -> u32 {
     for (x, line) in v.iter().enumerate() {
         for (y, c) in line.iter().enumerate() {
             if *c == 'A' && find_cross(&v, x, y) == Some(()) {
-                    xmas_count += 1;
+                xmas_count += 1;
             }
         }
     }
